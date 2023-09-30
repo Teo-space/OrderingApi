@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+
+		<PackageReference Include="NUlid" Version="*" />
+
+		<PackageReference Include="Mapster" Version="*" />
+
+		<PackageReference Include="FluentValidation" Version="*" />
+		<PackageReference Include="FluentValidation.AspNetCore" Version="*" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="*" />
+		<PackageReference Include="MediatR" Version="*" />
+		<PackageReference Include="MediatR.Extensions.FluentValidation.AspNetCore" Version="*" />
+
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="*" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="*" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="*" />
+		<PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="*" />
+
+
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Domain\Domain.csproj" />
+	</ItemGroup>
+</Project>

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="NUlid" Version="1.7.1" />
+		<PackageReference Include="FluentValidation" Version="*" />
+		<PackageReference Include="FluentValidation.AspNetCore" Version="*" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="*" />
+
+	</ItemGroup>
+</Project>
