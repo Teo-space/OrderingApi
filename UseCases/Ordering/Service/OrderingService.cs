@@ -27,7 +27,7 @@ internal class OrderingService : IOrderingService
         var result = validator.Validate(query);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{query.GetType().Name} Invalid  {query}");
+            logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
             return Result.InputValidationErrors<IReadOnlyCollection<Order>>(query.GetType().Name, result);
         }
         logger.LogInformation(query.ToString());
@@ -60,7 +60,7 @@ internal class OrderingService : IOrderingService
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
+            logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
             return Result.InputValidationErrors<Order>(command.GetType().Name, result);
         }
 
@@ -77,13 +77,15 @@ internal class OrderingService : IOrderingService
                 //Проверка существования пользователя
                 if (Customer == null)
                 {
-                    logger.LogWarning($"[{command.GetType().Name}] Customer({command.CustomerId}) Not Found!");
-                    return Result.NotFound<Order>($"[{command.GetType().Name}] Customer({command.CustomerId}) Not Found!");
+                    string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) Not Found!";
+                    logger.LogWarning(message);
+                    return Result.NotFound<Order>(message);
                 }
                 if (!Customer.OrderCartItems.Any())
                 {
-                    logger.LogWarning($"OrderCart is Empty!");
-                    return Result.InvalidOperation<Order>($"OrderCart is Empty!");
+                    string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) OrderCart is Empty!";
+                    logger.LogWarning(message);
+                    return Result.InvalidOperation<Order>(message);
                 }
 
                 var ProductNotFound = Customer.OrderCartItems
@@ -91,28 +93,29 @@ internal class OrderingService : IOrderingService
                     .Select(item => item.ProductId.ToString());
                 if (ProductNotFound.Any())
                 {
-                    logger.LogWarning($"Include OrderCartItems.Product or Product not exists!");
-                    return Result.InvalidOperation<Order>($"Include OrderCartItems.Product or Product not exists!");
+                    string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) Include OrderCartItems.Product or Product not exists!";
+                    logger.LogWarning(message);
+                    return Result.InvalidOperation<Order>(message);
                 }
                 var NotEnoughtProduct = Customer.OrderCartItems
                     .Where(item => item.Product.QuanityInStock < item.Quanity)
                     .Select(item => item.Product.Name);
                 if (NotEnoughtProduct.Any())
                 {
-                    logger.LogWarning($"Not Enought Products in Stock {string.Join(", ", NotEnoughtProduct)}");
-                    return Result.InvalidOperation<Order>($"Not Enought Products in Stock {string.Join(", ", NotEnoughtProduct)}");
+                    string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) Not Enought Products in Stock {string.Join(", ", NotEnoughtProduct)}";
+                    logger.LogWarning(message);
+                    return Result.InvalidOperation<Order>(message);
                 }
 
                 var order = Order.Create(Customer);
                 dbContext.Set<Order>().Add(order);
-                logger.LogInformation($"Add Order");
+                //logger.LogInformation($"Add Order");
 
                 foreach (var item in Customer.OrderCartItems)
                 {
-                    logger.LogInformation($"Add OrderLine");
+                    //logger.LogInformation($"Add OrderLine");
                     var orderLine = OrderLine.Create(order, item.Product, item);
                     dbContext.Set<OrderLine>().Add(orderLine);
-                    
                 }
 
                 dbContext.Set<OrderCartItem>().RemoveRange(Customer.OrderCartItems);

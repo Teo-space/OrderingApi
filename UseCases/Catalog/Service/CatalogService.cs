@@ -29,7 +29,7 @@ internal class CatalogService : ICatalogService
         var result = validator.Validate(query);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{query.GetType().Name} Invalid  {query}");
+            logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
             return Result.InputValidationErrors<IReadOnlyCollection<Product>>(query.GetType().Name, result);
         }
         //QueryGetProducts(Ulid ProductTypeId, bool Instock = true, bool OrberByDescending = false)
@@ -43,7 +43,7 @@ internal class CatalogService : ICatalogService
         {
             QResults = QResults.Where(x => x.QuanityInStock > 0);
         }
-        if(query.OrberByDescending)
+        if(query.OrderByDescending)
         {
             QResults = QResults.OrderByDescending(x => x.Price);
         }
@@ -69,7 +69,7 @@ internal class CatalogService : ICatalogService
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
+            logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
             return Result.InputValidationErrors<Product>(command.GetType().Name, result);
         }
         var ProductType = await dbContext
@@ -78,6 +78,7 @@ internal class CatalogService : ICatalogService
             .FirstOrDefaultAsync();
         if (ProductType is null)
         {
+            logger.LogWarning($"[{command.GetType().Name}] ParentNotFound (ProductType) : {command.ProductTypeId}");
             return Result.ParentNotFound<Product>($"ProductType : {command.ProductTypeId}");
         }
         var product = Product.Create(ProductType, command.Name, command.Price, command.QuanityInStock);
@@ -109,7 +110,7 @@ internal class CatalogService : ICatalogService
         var result = validator.Validate(query);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{query.GetType().Name} Invalid  {query}");
+            logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
             return Result.InputValidationErrors<ProductType>(query.GetType().Name, result);
         }
         var ProductType = await dbContext
@@ -119,7 +120,7 @@ internal class CatalogService : ICatalogService
             .FirstOrDefaultAsync();
         if (ProductType is null)
         {
-            logger.LogWarning($"NotFound ProductTypeByName {query.Name}");
+            logger.LogWarning($"[{query.GetType().Name}] ProductType NotFound {query.Name}");
             return Result.NotFound<ProductType>(query.Name);
         }
         return Result.Ok(ProductType);
@@ -138,13 +139,14 @@ internal class CatalogService : ICatalogService
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
+            logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
             return Result.InputValidationErrors<ProductType>(command.GetType().Name, result);
         }
         if(await dbContext.Set<ProductType>().AsNoTracking().AnyAsync(x => x.Name == command.Name))
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
-            return Result.Conflict<ProductType>($"ProductType with {nameof(command.Name)}: {command.Name} already exists!");
+            string message = $"[{command.GetType().Name}] ProductType with {nameof(command.Name)}: {command.Name} already exists!";
+            logger.LogWarning(message);
+            return Result.Conflict<ProductType>(message);
         }
 
         var productType = ProductType.Create(command.Name);

@@ -23,7 +23,7 @@ internal class OrderCartService : IOrderCartService
         var result = validator.Validate(query);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{query.GetType().Name} Invalid  {query}");
+            logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
             return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItem>>(query.GetType().Name, result);
         }
         var Customer = await dbContext
@@ -53,7 +53,7 @@ internal class OrderCartService : IOrderCartService
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
+            logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
             return Result.InputValidationErrors<OrderCartItem>(command.GetType().Name, result);
         }
 
@@ -64,8 +64,9 @@ internal class OrderCartService : IOrderCartService
         //Проверка существования пользователя
         if (Customer is null)
         {
-            logger.LogWarning($"[{command.GetType().Name}] Customer({command.CustomerId}) Not Found!");
-            return Result.NotFound<OrderCartItem>($"[{command.GetType().Name}] Customer({command.CustomerId}) Not Found!");
+            string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) Not Found!";
+            logger.LogWarning(message);
+            return Result.NotFound<OrderCartItem>(message);
         }
 
         var Product = await dbContext
@@ -75,8 +76,9 @@ internal class OrderCartService : IOrderCartService
         //Проверка существования товара
         if (Product is null)
         {
-            logger.LogWarning($"[{command.GetType().Name}] Product({command.CustomerId}) Not Found!");
-            return Result.NotFound<OrderCartItem>($"[{command.GetType().Name}] Product({command.CustomerId}) Not Found!");
+            string message = $"[{command.GetType().Name}] Product({command.ProductId}) Not Found!";
+            logger.LogWarning(message);
+            return Result.NotFound<OrderCartItem>(message);
         }
         var orderCartItemExists = await dbContext
             .Set<OrderCartItem>()
@@ -107,7 +109,7 @@ internal class OrderCartService : IOrderCartService
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
+            logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
             return Result.InputValidationErrors<OrderCartItem>(command.GetType().Name, result);
         }
 
@@ -118,8 +120,9 @@ internal class OrderCartService : IOrderCartService
         //Нет в корзине
         if (!items.Any())
         {
-            logger.LogWarning($"[{command.GetType().Name}] OrderCartItem({command.ProductId}) Not Found!");
-            return Result.NotFound<OrderCartItem>($"[{command.GetType().Name}] OrderCartItem({command.ProductId}) Not Found!");
+            string message = $"[{command.GetType().Name}] OrderCartItem  (ProductId:{command.ProductId}) Not Found!";
+            logger.LogWarning(message);
+            return Result.NotFound<OrderCartItem>(message);
         }
 
         dbContext.Set<OrderCartItem>().RemoveRange(items);
@@ -138,7 +141,7 @@ internal class OrderCartService : IOrderCartService
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
+            logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
             return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItem>>(command.GetType().Name, result);
         }
 
@@ -170,7 +173,7 @@ internal class OrderCartService : IOrderCartService
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
+            logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
             return Result.InputValidationErrors<OrderCartItem>(command.GetType().Name, result);
         }
 
@@ -181,11 +184,11 @@ internal class OrderCartService : IOrderCartService
         //Нет в корзине
         if (item is null)
         {
-            logger.LogWarning($"[{command.GetType().Name}] OrderCartItem({command.ProductId}) Not Found!");
-            return Result.NotFound<OrderCartItem>($"[{command.GetType().Name}] OrderCartItem({command.ProductId}) Not Found!");
+            string message = $"[{command.GetType().Name}] OrderCartItem(ProductId:{command.ProductId}) Not Found!";
+            logger.LogWarning(message);
+            return Result.NotFound<OrderCartItem>(message);
         }
-        //Можно хранить величину инкремента в товаре, подгружать его
-        item.Increment(/*Product*/);
+        item.Increment();
 
         await dbContext.SaveChangesAsync();
         return Result.Ok(item);
@@ -202,7 +205,7 @@ internal class OrderCartService : IOrderCartService
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
-            logger.LogWarning($"{command.GetType().Name} Invalid  {command}");
+            logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
             return Result.InputValidationErrors<OrderCartItem>(command.GetType().Name, result);
         }
 
@@ -213,8 +216,9 @@ internal class OrderCartService : IOrderCartService
         //Нет в корзине
         if (item is null)
         {
-            logger.LogWarning($"[{command.GetType().Name}] OrderCartItem({command.ProductId}) Not Found!");
-            return Result.NotFound<OrderCartItem>($"[{command.GetType().Name}] OrderCartItem({command.ProductId}) Not Found!");
+            string message = $"[{command.GetType().Name}] OrderCartItem(:ProductId{command.ProductId}) Not Found!";
+            logger.LogWarning(message);
+            return Result.NotFound<OrderCartItem>(message);
         }
         //Можно хранить величину инкремента в товаре, подгружать его
         item.Decrement(/*Product*/);
