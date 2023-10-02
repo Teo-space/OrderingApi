@@ -21,8 +21,8 @@ public class EntityConfigurationProduct : IEntityTypeConfiguration<Product>
             // .HasConversion(x => x.ToGuid(), x => new Ulid(x))
             ;
 
-
-        builder.Property(x => x.Name).HasMaxLength(100);//IsUnique???
+        builder.HasIndex(x => x.Name);//IsUnique???
+        builder.Property(x => x.Name).HasMaxLength(100);
 
         builder.Property(x => x.Price).IsConcurrencyToken();
         builder.Property(x => x.QuanityInStock).IsConcurrencyToken();
