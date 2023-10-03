@@ -6,26 +6,26 @@ using UseCases.Customers.Service;
 
 public static class ADependencyInjection
 {
-    public static WebApplicationBuilder AddUseCases(this WebApplicationBuilder builder)
+    public static void AddUseCases(this IServiceCollection Services)
     {
-        builder.Services.AddLogging();
+        Services.AddLogging();
 
         //builder.Services.AddFluentValidation();
-        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        builder.Services.AddFluentValidationAutoValidation();
-        builder.Services.AddFluentValidationClientsideAdapters();
+        Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        Services.AddFluentValidationAutoValidation();
+        Services.AddFluentValidationClientsideAdapters();
 
 
-        builder.Services.AddScoped<ICustomersService, CustomersService>();
-        builder.Services.AddScoped<IOrderCartService, OrderCartService>();
-        builder.Services.AddScoped<IOrderingService, OrderingService>();
-        builder.Services.AddScoped<ICatalogService, CatalogService>();
+        Services.AddScoped<ICustomersService, CustomersService>();
+        Services.AddScoped<IOrderCartService, OrderCartService>();
+        Services.AddScoped<IOrderingService, OrderingService>();
+        Services.AddScoped<ICatalogService, CatalogService>();
 
 
 
 
 
-        return builder;
+
     }
 
 

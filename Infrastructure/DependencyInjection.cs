@@ -4,21 +4,21 @@ using Microsoft.AspNetCore.Builder;
 
 public static class DependencyInjection__ForumsInfrastructure
 {
-    static void Configure(this WebApplicationBuilder builder)
+    static void Configure(this IServiceCollection Services)
     {
-        builder.Services.AddLogging();
+        Services.AddLogging();
 
-        builder.Services.AddFluentValidationAutoValidation();
-        builder.Services.AddFluentValidationClientsideAdapters();
-        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        Services.AddFluentValidationAutoValidation();
+        Services.AddFluentValidationClientsideAdapters();
+        Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
 
-    public static void AddInfrastructureUseSqlServer(this WebApplicationBuilder builder, string ConnectionString)
+    public static void AddInfrastructureUseSqlServer(this IServiceCollection Services, string ConnectionString)
     {
-        builder.Configure();
+        Services.Configure();
 
-        builder.Services.AddDbContext<AppDbContext>(options =>
+        Services.AddDbContext<AppDbContext>(options =>
         {
             options.UseSqlServer(ConnectionString);
         });
@@ -27,36 +27,36 @@ public static class DependencyInjection__ForumsInfrastructure
 
 
 
-    public static void AddInfrastructureUseSqlite(this WebApplicationBuilder builder
-		, string ConnectionString= $"FileName=AppDbContext.db")
+    public static void AddInfrastructureUseSqlite(this IServiceCollection Services
+        , string ConnectionString= $"FileName=AppDbContext.db")
 	{
-		builder.Configure();
+        Services.Configure();
 
-		builder.Services.AddDbContext<AppDbContext>(options =>
+        Services.AddDbContext<AppDbContext>(options =>
 		{
 			options.UseSqlite(ConnectionString);
 		});
 	}
 
-	public static void AddInfrastructureUseInMemoryDatabase(this WebApplicationBuilder builder)
+	public static void AddInfrastructureUseInMemoryDatabase(this IServiceCollection Services)
 	{
-        builder.Configure();
+        Services.Configure();
 
 
-        builder.Services.AddDbContext<AppDbContext>(options =>
+        Services.AddDbContext<AppDbContext>(options =>
 		{
-			options.UseInMemoryDatabase("ForumTest");
+			options.UseInMemoryDatabase("AppDbContext");
 		});
 
 	}
 
 
-    public static void AddInfrastructureUseMySql(this WebApplicationBuilder builder
-		, string ConnectionString = "Server=localhost;Uid=mysql;Pwd=mysql;Database=OrderingApi;")
+    public static void AddInfrastructureUseMySql(this IServiceCollection Services
+        , string ConnectionString = "Server=localhost;Uid=mysql;Pwd=mysql;Database=OrderingApi;")
 	{
-        builder.Configure();
+        Services.Configure();
 
-        builder.Services.AddDbContext<AppDbContext>(options =>
+        Services.AddDbContext<AppDbContext>(options =>
 		{
 			options.UseMySql(ConnectionString, ServerVersion.AutoDetect(ConnectionString));
 		});

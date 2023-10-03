@@ -29,11 +29,11 @@ var builder = WebApplication.CreateBuilder(args);
     {
         //builder.AddInfrastructureUseSqlite();
         //builder.AddInfrastructureUseMySql();
-        builder.AddInfrastructureUseSqlServer(builder.Configuration.GetConnectionString("MSSqlLocal"));
+        builder.Services.AddInfrastructureUseSqlServer(builder.Configuration.GetConnectionString("MSSqlLocal"));
         //User Secrets:
         //"ConnectionStrings:MSSqlLocal": "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=aspnet-OrderingApi-53bc9b9d-9d6a-45d4-8429-2a2761773502;Integrated Security=True;Multiple Active Result Sets=True"
 
-        builder.AddUseCases();
+        builder.Services.AddUseCases();
     }
 
 }
