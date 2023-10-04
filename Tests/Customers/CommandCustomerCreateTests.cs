@@ -7,6 +7,7 @@ namespace Tests.Customers;
 public class CommandCustomerCreateTests
 {
     private IServiceProvider serviceProvider {  get; set; }
+    private ICustomersService customersService {  get; set; }
 
     [SetUp]
     public void Setup()
@@ -15,13 +16,13 @@ public class CommandCustomerCreateTests
         services.AddInfrastructureUseInMemoryDatabase();
         services.AddUseCases();
         serviceProvider = services.BuildServiceProvider();
+        customersService = serviceProvider.GetRequiredService<ICustomersService>();
     }
     //using var Scope = serviceProvider.CreateScope();
 
     [Test]
     public async Task CustomerCreateOk()
     {
-        ICustomersService customersService = serviceProvider.GetRequiredService<ICustomersService>();
         var command = new CommandCustomerCreate("+79871234567", "Василий Иванович Никитин");
         var CustomerCreatedResult = await customersService.CustomerCreate(command);
 
@@ -31,7 +32,6 @@ public class CommandCustomerCreateTests
     [Test]
     public async Task CustomerCreatePhoneNumberTooLong()
     {
-        ICustomersService customersService = serviceProvider.GetRequiredService<ICustomersService>();
         var command = new CommandCustomerCreate("+798712345670", "Василий Иванович Никитин");
         var CustomerCreatedResult = await customersService.CustomerCreate(command);
 
@@ -41,7 +41,6 @@ public class CommandCustomerCreateTests
     [Test]
     public async Task CustomerCreatePhoneNumberIncorrect()
     {
-        ICustomersService customersService = serviceProvider.GetRequiredService<ICustomersService>();
         var command = new CommandCustomerCreate("+7987123456A", "Василий Иванович Никитин");
         var CustomerCreatedResult = await customersService.CustomerCreate(command);
 
@@ -51,26 +50,25 @@ public class CommandCustomerCreateTests
     [Test]
     public async Task CustomerCreateUserNameTooLong()
     {
-        ICustomersService customersService = serviceProvider.GetRequiredService<ICustomersService>();
         var command = new CommandCustomerCreate("+79871234567", "Василий Иванович Никитин ТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекстТекст");
         var CustomerCreatedResult = await customersService.CustomerCreate(command);
 
         CustomerCreatedResult.Success.Should().BeFalse();
     }
 
-    /*
+
     [Test]
     public async Task CustomerCreateExists()
     {
-        ICustomersService customersService = serviceProvider.GetRequiredService<ICustomersService>();
-        var command = new CommandCustomerCreate("+79871234567", "Василий Иванович Никитин");
-        var CustomerCreatedResult = await customersService.CustomerCreate(command);
-
+        var command = new CommandCustomerCreate("+79871234561", "Александр Лейб");
+        //Создали пользователя
+        await customersService.CustomerCreate(command);
+        //Пробуем создать еще раз с тем же номером телефона
         var CustomerExistsResult = await customersService.CustomerCreate(command);
 
-        CustomerCreatedResult.Success.Should().BeFalse();
+        CustomerExistsResult.Success.Should().BeFalse();
     }
-    */
+
 
 
 }
