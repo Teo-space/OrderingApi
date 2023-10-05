@@ -13,7 +13,7 @@ public class QueryCustomerGetTests
     public async Task Setup()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddInfrastructureUseInMemoryDatabase();
+        services.AddInfrastructureUseInMemoryDatabase(Guid.NewGuid().ToString());
         services.AddUseCases();
         serviceProvider = services.BuildServiceProvider();
 

@@ -3,7 +3,7 @@ using UseCases.Catalog.Service;
 using UseCases.Customers.Service;
 using UseCases.Customers;
 
-namespace Tests.Catalog.ProductType;
+namespace Tests.Catalog.ProductTypes;
 
 public class CommandProductTypeCreateTests
 {
@@ -14,7 +14,7 @@ public class CommandProductTypeCreateTests
     public void Setup()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddInfrastructureUseInMemoryDatabase();
+        services.AddInfrastructureUseInMemoryDatabase(Guid.NewGuid().ToString());
         services.AddUseCases();
         serviceProvider = services.BuildServiceProvider();
         catalogService = serviceProvider.GetRequiredService<ICatalogService>();
@@ -22,16 +22,17 @@ public class CommandProductTypeCreateTests
 
 
     [Test]
-    public async Task ProductTypeOk()
+    public async Task ProductTypeCreateOk()
     {
         var command = new CommandProductTypeCreate("Трансмиссионные масла");
         var Result = await catalogService.ProductTypeCreate(command);
 
         Result.Success.Should().BeTrue();
+        Console.WriteLine(Result.message);
     }
 
     [Test]
-    public async Task ProductTypeAlreadyExists()
+    public async Task ProductTypeCreateAlreadyExists()
     {
         var command = new CommandProductTypeCreate("Моторные масла");
         await catalogService.ProductTypeCreate(command);
@@ -41,7 +42,7 @@ public class CommandProductTypeCreateTests
     }
 
     [Test]
-    public async Task ProductTypeNameTooLong()
+    public async Task ProductTypeCreateNameTooLong()
     {
         var command = new CommandProductTypeCreate("Моторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные масла");
         var ResultExists = await catalogService.ProductTypeCreate(command);

@@ -38,14 +38,14 @@ public static class DependencyInjection__ForumsInfrastructure
 		});
 	}
 
-	public static void AddInfrastructureUseInMemoryDatabase(this IServiceCollection Services)
+	public static void AddInfrastructureUseInMemoryDatabase(this IServiceCollection Services, string DataBaseName)
 	{
         Services.Configure();
 
 
         Services.AddDbContext<AppDbContext>(options =>
 		{
-			options.UseInMemoryDatabase("AppDbContext");
+			options.UseInMemoryDatabase(DataBaseName);
 		});
 
 	}

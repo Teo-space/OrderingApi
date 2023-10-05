@@ -14,6 +14,5 @@ public record QueryGetProductTypeByName(string Name)
             RuleFor(x => x.Name).NotNull().NotEmpty().MaximumLength(100);
         }
     }
-
-
 }
+

@@ -89,6 +89,11 @@ internal class CatalogService : ICatalogService
 
 
 
+
+
+
+
+
     /// <summary>
     /// Получить всех типов товаров
     /// </summary>
@@ -98,6 +103,7 @@ internal class CatalogService : ICatalogService
         var ProductTypes = await dbContext.Set<ProductType>().AsNoTracking().OrderBy(x => x.Name).ToListAsync();
         return Result.Ok(ProductTypes as IReadOnlyCollection<ProductType>);
     }
+
 
     /// <summary>
     /// Получение товара по имени
@@ -125,7 +131,6 @@ internal class CatalogService : ICatalogService
         }
         return Result.Ok(ProductType);
     }
-
 
 
     /// <summary>
@@ -158,4 +163,6 @@ internal class CatalogService : ICatalogService
 
 
 
+
 }
+

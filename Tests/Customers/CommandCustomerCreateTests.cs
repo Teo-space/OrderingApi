@@ -13,7 +13,7 @@ public class CommandCustomerCreateTests
     public void Setup()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddInfrastructureUseInMemoryDatabase();
+        services.AddInfrastructureUseInMemoryDatabase(Guid.NewGuid().ToString());
         services.AddUseCases();
         serviceProvider = services.BuildServiceProvider();
         customersService = serviceProvider.GetRequiredService<ICustomersService>();
