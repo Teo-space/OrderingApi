@@ -4,9 +4,11 @@
 /// <summary>
 /// Создание нового товара
 /// </summary>
-/// <param name="Name"></param>
-public record CommandProductCreate(IdType ProductTypeId
-    , string Name, double Price, double QuanityInStock/*Должно устанавливатся отдельно от создания*/)
+/// <param name="ProductTypeId">Идентификатор типа товара</param>
+/// <param name="Name">Наименование товара. MaximumLength(100)</param>
+/// <param name="Price">Цена за единицу</param>
+/// <param name="QuanityInStock">Количество на складе</param>
+public record CommandProductCreate(IdType ProductTypeId, string Name, double Price, double QuanityInStock)
 {
     public class Validator : AbstractValidator<CommandProductCreate>
     {

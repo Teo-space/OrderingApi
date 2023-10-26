@@ -24,7 +24,7 @@ internal class OrderCartService : IOrderCartService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
-            return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItem>>(query.GetType().Name, result);
+            return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItem>>(result);
         }
         var Customer = await dbContext
             .Set<Customer>()
@@ -54,7 +54,7 @@ internal class OrderCartService : IOrderCartService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<OrderCartItem>(command.GetType().Name, result);
+            return Result.InputValidationErrors<OrderCartItem>(result);
         }
 
         var Customer = await dbContext
@@ -110,7 +110,7 @@ internal class OrderCartService : IOrderCartService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<OrderCartItem>(command.GetType().Name, result);
+            return Result.InputValidationErrors<OrderCartItem>(result);
         }
 
         var items = await dbContext.Set<OrderCartItem>()
@@ -142,7 +142,7 @@ internal class OrderCartService : IOrderCartService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItem>>(command.GetType().Name, result);
+            return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItem>>(result);
         }
 
         var items = await dbContext
@@ -174,7 +174,7 @@ internal class OrderCartService : IOrderCartService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<OrderCartItem>(command.GetType().Name, result);
+            return Result.InputValidationErrors<OrderCartItem>(result);
         }
 
         var item = await dbContext.Set<OrderCartItem>()
@@ -206,7 +206,7 @@ internal class OrderCartService : IOrderCartService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<OrderCartItem>(command.GetType().Name, result);
+            return Result.InputValidationErrors<OrderCartItem>(result);
         }
 
         var item = await dbContext.Set<OrderCartItem>()

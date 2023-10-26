@@ -4,6 +4,7 @@ namespace OrderingApi.AppFilters;
 
 
 
+
 public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
 {
     private readonly ILogger<HttpResponseExceptionFilter> logger;
@@ -19,12 +20,16 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
 
     public void OnActionExecuted(ActionExecutedContext context)
     {
-        if (context.Exception is Exception exception)
+        if (context?.Exception is not null && context.Exception is Exception exception)
         {
-            logger.LogError($"[{context?.HttpContext?.Request?.Method}] {context?.HttpContext?.Request?.Path}");
-            logger.LogError(exception.ToString());
+            logger.LogError(
+@$"[{context?.HttpContext?.Request?.Method}] {context?.HttpContext?.Request?.Path}  
+ExceptionType: {exception.GetType().Name}, 
+Message: {exception.Message}. 
+Exception: {{@exception}}", exception);
 
-            context.Result = new ObjectResult(Result.Exception(exception.Message, exception.ToString()))
+
+            context.Result = new ObjectResult(Result.Exception<string>(exception.GetType().Name, exception.Message))
             {
                 StatusCode = StatusCodes.Status500InternalServerError
             };
@@ -33,4 +38,3 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
         }
     }
 }
-

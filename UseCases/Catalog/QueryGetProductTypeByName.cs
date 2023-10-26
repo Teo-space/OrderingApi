@@ -4,7 +4,7 @@
 /// <summary>
 /// Получение типа товара по имени
 /// </summary>
-/// <param name="Name"></param>
+/// <param name="Name">Наименование типа товара MaximumLength(100)</param>
 public record QueryGetProductTypeByName(string Name)
 {
     public class Validator : AbstractValidator<QueryGetProductTypeByName>

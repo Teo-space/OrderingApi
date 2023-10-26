@@ -1,7 +1,4 @@
 using Infrastructure;
-using Infrastructure.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using OrderingApi.AppFilters;
 
 
@@ -24,8 +21,15 @@ var builder = WebApplication.CreateBuilder(args);
     });
 
     builder.Services.AddEndpointsApiExplorer();
-    builder.AddAndConfigureSwagger();
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"Domain.xml"));
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"UseCases.xml"));
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"ApiContracts.xml"));
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"Results.xml"));
 
+    });
     {
         builder.Services.AddInfrastructureUseSqlite();
         //builder.Services.AddInfrastructureUseMySql();
@@ -41,16 +45,17 @@ var app = builder.Build();
 {
     {   
         //Наполнение БД тестовыми данными
-        //Наполнение БД тестовыми данными
-        //Наполнение БД тестовыми данными
-        //Наполнение БД тестовыми данными
         TestDataInitializer.Init(app.Services);
     }
 
 
     if (app.Environment.IsDevelopment())
     {
-        app.UseAndConfigureSwagger();
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        });
     }
 
 

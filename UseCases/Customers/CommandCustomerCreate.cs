@@ -5,7 +5,7 @@
 /// Команда для создания клиента
 /// </summary>
 /// <param name="PhoneNumber">Номер телефона в формате +79871234567 (12 символов)</param>
-/// <param name="UserName">Фамилия имя отчество</param>
+/// <param name="UserName">Фамилия имя отчество  MaximumLength(100)</param>
 public record CommandCustomerCreate(string PhoneNumber, string UserName)
 {
     public class Validator : AbstractValidator<CommandCustomerCreate>

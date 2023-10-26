@@ -25,7 +25,7 @@ internal class CustomersService : ICustomersService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<Customer>(command.GetType().Name, result);
+            return Result.InputValidationErrors<Customer>(result);
         }
         var CustomerExists = await dbContext
             .Set<Customer>()
@@ -58,7 +58,7 @@ internal class CustomersService : ICustomersService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
-            return Result.InputValidationErrors<Customer>(query.GetType().Name, result);
+            return Result.InputValidationErrors<Customer>(result);
         }
 
         var Customer = await dbContext

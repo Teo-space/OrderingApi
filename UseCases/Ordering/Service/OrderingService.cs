@@ -28,19 +28,18 @@ internal class OrderingService : IOrderingService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
-            return Result.InputValidationErrors<IReadOnlyCollection<Order>>(query.GetType().Name, result);
+            return Result.InputValidationErrors<IReadOnlyCollection<Order>>(result);
         }
         logger.LogInformation(query.ToString());
 
-        var Orders = (await dbContext
+        var Orders = await dbContext
             .Set<Order>()
             .AsNoTracking()
             .Where(order => order.CustomerId == query.CustomerId)
             .Where(order => order.CreatedAt.Date >= query.StartDate.Date)
             .Where(order => order.CreatedAt.Date <= query.EndDate.Date)
-            //.OrderBy(order => order.CreatedAt)
-            .ToListAsync())
-            .OrderBy(order => order.CreatedAt).ToList();//Сортировка результатов в памяти
+            .OrderBy(order => order.CreatedAt)
+            .ToListAsync();
 
         return Result.Ok(Orders as IReadOnlyCollection<Order>);
     }
@@ -61,7 +60,7 @@ internal class OrderingService : IOrderingService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<Order>(command.GetType().Name, result);
+            return Result.InputValidationErrors<Order>(result);
         }
 
         using (var transaction = dbContext.Database.BeginTransaction())
@@ -127,7 +126,7 @@ internal class OrderingService : IOrderingService
             catch (Exception ex)
             {
                 transaction.Rollback();
-                throw ex;
+                throw;
             }
         }
     }

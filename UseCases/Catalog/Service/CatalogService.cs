@@ -30,9 +30,8 @@ internal class CatalogService : ICatalogService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
-            return Result.InputValidationErrors<IReadOnlyCollection<Product>>(query.GetType().Name, result);
+            return Result.InputValidationErrors<IReadOnlyCollection<Product>>(result);
         }
-        //QueryGetProducts(Ulid ProductTypeId, bool Instock = true, bool OrberByDescending = false)
 
         var QResults = dbContext.Set<Product>().AsNoTracking();
         if(query.ProductTypeId != IdType.Empty)
@@ -70,7 +69,7 @@ internal class CatalogService : ICatalogService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<Product>(command.GetType().Name, result);
+            return Result.InputValidationErrors<Product>(result);
         }
         var ProductType = await dbContext
             .Set<ProductType>()
@@ -117,7 +116,7 @@ internal class CatalogService : ICatalogService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
-            return Result.InputValidationErrors<ProductType>(query.GetType().Name, result);
+            return Result.InputValidationErrors<ProductType>(result);
         }
         var ProductType = await dbContext
             .Set<ProductType>()
@@ -145,7 +144,7 @@ internal class CatalogService : ICatalogService
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<ProductType>(command.GetType().Name, result);
+            return Result.InputValidationErrors<ProductType>(result);
         }
         if(await dbContext.Set<ProductType>().AsNoTracking().AnyAsync(x => x.Name == command.Name))
         {

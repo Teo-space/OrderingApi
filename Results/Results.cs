@@ -1,83 +1,66 @@
 ﻿using FluentValidation.Results;
 
-
-public record Result<T>(T Value, bool Success, string message, IReadOnlyCollection<string> Errors)
+/// <summary>
+/// Результат Запроса\Команды
+/// </summary>
+/// <typeparam name="T">Тип</typeparam>
+/// <param name="Value">При успешном выполнении - результат</param>
+/// <param name="Success">Успешно\Проблема</param>
+/// <param name="Type">Тип проблемы</param>
+/// <param name="Detail">Описание проблемы</param>
+/// <param name="Errors">Ошибки, если их несколько. Например ошибки валидации.</param>
+public record Result<T>(T Value, bool Success, string Type, string Detail, IReadOnlyCollection<string> Errors)
 {
-	public static implicit operator T(Result<T> Result) => Result.Value;
-	public static explicit operator Result<T>(T o) => Result.Ok(o);
-	public static implicit operator string(Result<T> Result) => Result.Value?.ToString() ?? string.Empty;
-
+    public static implicit operator T(Result<T> Result) => Result.Value;
+    public static explicit operator Result<T>(T o) => Result.Ok(o);
+    public static implicit operator string(Result<T> Result)
+        => $"Result<{typeof(T)}>(Success:{Result.Success}, Type: {Result.Type}) Value: {Result?.Value?.ToString()}";
 }
 public static class ResultTypedExtensions
 {
-	public static Result.OkResult<T> Ok<T>(this T result) where T : class => Result.Ok(result);
+    public static Result<T> Ok<T>(this T result) where T : class => Result.Ok(result);
 }
-public partial record Result
+
+
+public partial class Result
 {
-	private static readonly IReadOnlyCollection<string> EmptyErrors = new List<string>().AsReadOnly();
+    private static readonly IReadOnlyCollection<string> EmptyErrors = new List<string>().AsReadOnly();
 
+    public static Result<T> Ok<T>(T Value)
+        => new Result<T>(Value: Value, Success: true, Type: "OkResult", "OkResult", EmptyErrors);
 
-    public record OkResult<T>(T Value) : Result<T>(Value, true, string.Empty, EmptyErrors);
-	public static OkResult<T> Ok<T>(T Value) => new OkResult<T>(Value);
+    public static Result<T> Problem<T>(string Type, string Detail)
+        => new Result<T>(Value: default, Success: false, Type, Detail, EmptyErrors);
 
+    public static Result<T> Exception<T>(string Type, string Detail) => Problem<T>("Exception", Detail);
 
-    public record ExceptionResult(string message, string Value) : Result<string>(Value, false, message, EmptyErrors);
-    public static ExceptionResult Exception(string message, string Detail)
-		=> new ExceptionResult(message, Detail);
+    public static Result<T> Errors<T>(string Type, string Detail, IReadOnlyCollection<string> Errors)
+        => new Result<T>(Value: default, Success: false, Type, Detail, Errors);
 
+    public static Result<T> InputValidationError<T>(string Detail)
+        => Errors<T>("InputValidationError", Detail, EmptyErrors);
 
-
-    public record MessageResult<T>(string message) : Result<T>(default(T), false, message, EmptyErrors);
-	public static MessageResult<T> Message<T>(string message) => new MessageResult<T>(message);
-
-
-
-	public record InputValidationErrorResult<T>(string message) : MessageResult<T>($"[InputValidationError] {message}");
-	public static InputValidationErrorResult<T> InputValidationError<T>(string message) => new InputValidationErrorResult<T>(message);
-
-
-
-	public record InputValidationErrorsResult<T>(string message, IReadOnlyCollection<string> Errors) 
-		: Result<T>(default(T), false, message, Errors);
-
-	public static InputValidationErrorsResult<T> InputValidationErrors<T>(string message, IReadOnlyCollection<string> Errors) 
-		=> new InputValidationErrorsResult<T>(message, Errors);
-
-	public static InputValidationErrorsResult<T> InputValidationErrors<T>(string message, ValidationResult result) 
-		=> new InputValidationErrorsResult<T>($"One or more validation errors during execution : {message}",
-            result.Errors
+    public static Result<T> InputValidationErrors<T>(ValidationResult result)
+    {
+        var errors = result.Errors
                 .Select(error => $"Property : {error.PropertyName}, With error : {error.ErrorMessage}, InputValue: {error.AttemptedValue}")
-                .ToList().AsReadOnly());
+                .ToList().AsReadOnly();
+        return Errors<T>("InputValidationErrors", $"One or more validation errors during execution", errors);
+    }
+
+    public static Result<T> UnAuthorizedResult<T>(string Detail) => Problem<T>("UnAuthorized", Detail);
+    public static Result<T> NotEnoughPermissions<T>(string Detail) => Problem<T>("NotEnoughPermissions", Detail);
 
 
-
-
-
-
-	public record UnAuthorizedResult<T>(string message) : MessageResult<T>($"[UnAuthorized] {message}");
-	public static UnAuthorizedResult<T> UnAuthorized<T>(string message) => new UnAuthorizedResult<T>(message);
-	public static UnAuthorizedResult<T> UnAuthorized<T>() => UnAuthorized<T>("Authenticated user required");
-	public static UnAuthorizedResult<T> NotEnoughPermissions<T>() => UnAuthorized<T>("Not Enough Permissions");
-	public static UnAuthorizedResult<T> Required<T>(string message) => UnAuthorized<T>($"{message} Required");
-
-
-	public record NotFoundResult<T>(string message) : MessageResult<T>($"[NotFound] {message}");
-	public static NotFoundResult<T> NotFound<T>(string message) => new NotFoundResult<T>(message);
-
-	public record DeletedResult<T>(string message) : MessageResult<T>($"[Deleted] {message}");
-	public static DeletedResult<T> Deleted<T>(string message) => new DeletedResult<T>(message);
-
-	public record ParentNotFoundResult<T>(string message) : MessageResult<T>($"[ParentNotFound] {message}");
-	public static ParentNotFoundResult<T> ParentNotFound<T>(string message) => new ParentNotFoundResult<T>(message);
-
-	public record ConflictResult<T>(string message) : MessageResult<T>($"[Conflict] {message}");
-	public static ConflictResult<T> Conflict<T>(string message) => new ConflictResult<T>(message);
-
-
-	public record InvalidOperationResult<T>(string message) : MessageResult<T>($"[InvalidOperation] {message}");
-	public static InvalidOperationResult<T> InvalidOperation<T>(string message) => new InvalidOperationResult<T>(message);
+    public static Result<T> NotFound<T>(string Detail) => Problem<T>("NotFound", Detail);
+    public static Result<T> Deleted<T>(string Detail) => Problem<T>("Deleted", Detail);
+    public static Result<T> ParentNotFound<T>(string Detail) => Problem<T>("ParentNotFound", Detail);
+    public static Result<T> Conflict<T>(string Detail) => Problem<T>("Conflict", Detail);
+    public static Result<T> InvalidOperation<T>(string Detail) => Problem<T>("InvalidOperation", Detail);
 
 
 
 }
+
+
 
