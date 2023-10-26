@@ -1,11 +1,15 @@
 using Infrastructure;
 using OrderingApi.AppFilters;
-
-
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    builder.Services.AddLogging();
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console());
+
     builder.Services.AddControllers(options =>
     {
         options.Filters.Add<HttpResponseExceptionFilter>();
@@ -47,7 +51,6 @@ var app = builder.Build();
         //Наполнение БД тестовыми данными
         TestDataInitializer.Init(app.Services);
     }
-
 
     if (app.Environment.IsDevelopment())
     {
