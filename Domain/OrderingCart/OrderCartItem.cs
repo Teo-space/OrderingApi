@@ -1,20 +1,30 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace Domain.OrderingCart;
 
-namespace Domain.OrderingCart;
-
+/// <summary>
+/// Спецификация (позиция) в корзине заказа
+/// </summary>
 public class OrderCartItem
 {
+    /// <summary>
+    /// Идентификатор спецификации
+    /// </summary>
     public IdType OrderCartItemId { get; private set; }
-
+    /// <summary>
+    /// Идентификатор клиента
+    /// </summary>
     public IdType CustomerId { get; private set; }
     [JsonIgnore]
     public Customer Customer { get; private set; }
-
+    /// <summary>
+    /// Идентификатор товара
+    /// </summary>
     public IdType ProductId { get; private set; }
     [JsonIgnore]
     public Product Product { get; private set; }
 
-
+    /// <summary>
+    /// количество товара
+    /// </summary>
     public double Quanity { get; private set; }
 
 

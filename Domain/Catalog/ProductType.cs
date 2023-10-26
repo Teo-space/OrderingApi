@@ -1,9 +1,17 @@
 ﻿namespace Domain.Catalog;
 
+/// <summary>
+/// Тип товара
+/// </summary>
 public class ProductType
 {
+    /// <summary>
+    /// Идентификатор типа товара
+    /// </summary>
     public IdType ProductTypeId { get; private set; }
-
+    /// <summary>
+    /// наименование типа товара
+    /// </summary>
     public string Name { get; private set; }
 
 

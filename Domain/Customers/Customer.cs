@@ -1,19 +1,21 @@
 ﻿namespace Domain.Customers;
 
-/*
- 
-Таблица с клиентами:
-ИД клиента
-ФИО клиента
-Телефон клиента
- 
-*/
+/// <summary>
+/// Клиент
+/// </summary>
 public class Customer
 {
+    /// <summary>
+    /// Идентификатор клиента
+    /// </summary>
     public IdType CustomerId { get; private set; }
-
+    /// <summary>
+    /// Телефонный номер
+    /// </summary>
     public string PhoneNumber { get; private set; }
-
+    /// <summary>
+    /// Ф.и.о
+    /// </summary>
     public string UserName { get; private set; }
 
 

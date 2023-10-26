@@ -1,26 +1,31 @@
 ﻿namespace Domain.Catalog;
 
-
-/*
-Таблица с товарами:
-ИД товара
-ИД типа товара (список всех типов выделить в отдельную таблицу, поле с foreign key)
-Наименование товара
-Цена товара
-Доступное количество товара на складе
-*/
+/// <summary>
+/// Товар
+/// </summary>
 public class Product
 {
+    /// <summary>
+    /// Идентификатор товара
+    /// </summary>
     public IdType ProductId { get; private set; }
-
+    /// <summary>
+    /// Идентификатор типа товара
+    /// </summary>
     public IdType ProductTypeId { get; private set; }
     [JsonIgnore]
     public ProductType ProductType { get; private set; }
-    
+    /// <summary>
+    /// Наименование товара
+    /// </summary>
     public string Name { get; private set; }
-
+    /// <summary>
+    /// Цена за ед. товара
+    /// </summary>
     public double Price { get; private set; }
-
+    /// <summary>
+    /// Количество на складе
+    /// </summary>
     public double QuanityInStock { get; private set; }
 
     [JsonIgnore]

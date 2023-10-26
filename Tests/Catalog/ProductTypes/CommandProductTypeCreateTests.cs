@@ -28,7 +28,7 @@ public class CommandProductTypeCreateTests
         var Result = await catalogService.ProductTypeCreate(command);
 
         Result.Success.Should().BeTrue();
-        Console.WriteLine(Result.message);
+        Console.WriteLine(Result);
     }
 
     [Test]
