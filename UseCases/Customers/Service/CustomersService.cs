@@ -1,68 +1,65 @@
 ﻿using Infrastructure.EntityFrameworkCore;
+using Mapster;
 using Microsoft.Extensions.Logging;
 
 namespace UseCases.Customers.Service;
 
-internal class CustomersService : ICustomersService
+/// <summary>
+/// Сервис для работы клиентами(покупателями)
+/// </summary>
+internal class CustomersService(AppDbContext dbContext, ILogger<CustomersService> logger) : ICustomersService
 {
-    private readonly AppDbContext dbContext;
-    private readonly ILogger<CustomersService> logger;
-    public CustomersService(AppDbContext dbContext, ILogger<CustomersService> logger)
-    {
-        this.dbContext = dbContext;
-        this.logger = logger;
-    }
+
 
     /// <summary>
-    /// Создание пользователя
+    /// Создание клиента
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<Result<Customer>> CustomerCreate(CommandCustomerCreate command)
+    public async Task<Result<CustomerDto>> CustomerCreate(CommandCustomerCreate command)
     {
         var validator = new CommandCustomerCreate.Validator();
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<Customer>(result);
+            return Result.InputValidationErrors<CustomerDto>(result);
         }
-        var CustomerExists = await dbContext
-            .Set<Customer>()
-            .Where(x => x.PhoneNumber == command.PhoneNumber)
-            .FirstOrDefaultAsync();
-        if (CustomerExists is not null)
+        var CustomerExists = await dbContext.Customers.AnyAsync(x => x.PhoneNumber == command.PhoneNumber);
+        if (CustomerExists)
         {
             string message = $"[{command.GetType().Name}] Customer with phoneNumber: {command.PhoneNumber} already exists!";
             logger.LogWarning(message);
-            return Result.Conflict<Customer>(message);
+            return Result.Conflict<CustomerDto>(message);
         }
 
         var customer = Customer.Create(command.PhoneNumber, command.UserName);
         await dbContext.AddAsync(customer);
         await dbContext.SaveChangesAsync();
-        return Result.Ok(customer);
+
+        return customer.Adapt<CustomerDto>().Ok();
     }
 
 
 
     /// <summary>
-    /// Получение пользователя по номеру телефона
+    /// Получение клиента по номеру телефона
     /// </summary>
     /// <param name="query"></param>
     /// <returns></returns>
-    public async Task<Result<Customer>> CustomerGet(QueryCustomerGet query)
+    public async Task<Result<CustomerDto>> CustomerGet(QueryCustomerGet query)
     {
         var validator = new QueryCustomerGet.Validator();
         var result = validator.Validate(query);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
-            return Result.InputValidationErrors<Customer>(result);
+            return Result.InputValidationErrors<CustomerDto>(result);
         }
 
         var Customer = await dbContext
-            .Set<Customer>().AsNoTracking()
+            .Set<Customer>()
+            .AsNoTracking()
             .Where(x => x.PhoneNumber == query.PhoneNumber)
             .FirstOrDefaultAsync();
 
@@ -70,9 +67,9 @@ internal class CustomersService : ICustomersService
         {
             string message = $"[{query.GetType().Name}] Customer with phoneNumber: {query.PhoneNumber} not found!";
             logger.LogWarning(message);
-            return Result.NotFound<Customer>(message);
+            return Result.NotFound<CustomerDto>(message);
         }
-        return Result.Ok(Customer);
+        return Customer.Adapt<CustomerDto>().Ok(); 
     }
 
 

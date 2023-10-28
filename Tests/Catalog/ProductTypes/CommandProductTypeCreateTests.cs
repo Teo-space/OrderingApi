@@ -8,7 +8,7 @@ namespace Tests.Catalog.ProductTypes;
 public class CommandProductTypeCreateTests
 {
     private IServiceProvider serviceProvider { get; set; }
-    private ICatalogService catalogService { get; set; }
+    private IProductTypeService ProductTypeService { get; set; }
 
     [SetUp]
     public void Setup()
@@ -17,7 +17,7 @@ public class CommandProductTypeCreateTests
         services.AddInfrastructureUseInMemoryDatabase(Guid.NewGuid().ToString());
         services.AddUseCases();
         serviceProvider = services.BuildServiceProvider();
-        catalogService = serviceProvider.GetRequiredService<ICatalogService>();
+        ProductTypeService = serviceProvider.GetRequiredService<IProductTypeService>();
     }
 
 
@@ -25,7 +25,7 @@ public class CommandProductTypeCreateTests
     public async Task ProductTypeCreateOk()
     {
         var command = new CommandProductTypeCreate("Трансмиссионные масла");
-        var Result = await catalogService.ProductTypeCreate(command);
+        var Result = await ProductTypeService.ProductTypeCreate(command);
 
         Result.Success.Should().BeTrue();
         Console.WriteLine(Result);
@@ -35,8 +35,8 @@ public class CommandProductTypeCreateTests
     public async Task ProductTypeCreateAlreadyExists()
     {
         var command = new CommandProductTypeCreate("Моторные масла");
-        await catalogService.ProductTypeCreate(command);
-        var ResultExists = await catalogService.ProductTypeCreate(command);
+        await ProductTypeService.ProductTypeCreate(command);
+        var ResultExists = await ProductTypeService.ProductTypeCreate(command);
 
         ResultExists.Success.Should().BeFalse();
     }
@@ -45,7 +45,7 @@ public class CommandProductTypeCreateTests
     public async Task ProductTypeCreateNameTooLong()
     {
         var command = new CommandProductTypeCreate("Моторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные масла");
-        var ResultExists = await catalogService.ProductTypeCreate(command);
+        var ResultExists = await ProductTypeService.ProductTypeCreate(command);
 
         ResultExists.Success.Should().BeFalse();
     }

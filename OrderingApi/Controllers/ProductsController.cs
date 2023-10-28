@@ -10,13 +10,8 @@ namespace OrderingApi.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class ProductsController : ControllerBase
+public class ProductsController(IProductService productService) : ControllerBase
 {
-    readonly ICatalogService catalogService;
-    public ProductsController(ICatalogService catalogService)
-    {
-        this.catalogService = catalogService;
-    }
 
     /// <summary>
     /// Запрос получения списка товаров,
@@ -29,29 +24,8 @@ public class ProductsController : ControllerBase
     /// <returns></returns>
     [HttpGet]
     [OutputCache(Duration = 30)]
-    public async Task<Result<IReadOnlyCollection<Product>>> GetProducts([FromQuery] QueryGetProducts query) 
-        => await catalogService.GetProducts(query);
-
-    /// <summary>
-    /// Запрос на получение типов продуктов
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet("Types/")]
-    [OutputCache(Duration = 30)]
-    public async Task<Result<IReadOnlyCollection<ProductType>>> GetProductTypes()
-        => await catalogService.GetProductTypes();
-
-    /// <summary>
-    /// Запрос на получение типа продукта по имени
-    /// </summary>
-    /// <param name="query"></param>
-    /// <returns></returns>
-    [HttpGet("TypeByName/")]
-    [OutputCache(Duration = 30)]
-    public async Task<Result<ProductType>> GetProductTypeByName([FromQuery] QueryGetProductTypeByName query)
-        => await catalogService.GetProductTypeByName(query);
-
-
+    public async Task<Result<IReadOnlyCollection<ProductDto>>> GetProducts([FromQuery] QueryGetProducts query) 
+        => await productService.GetProducts(query);
 
 
 

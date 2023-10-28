@@ -9,9 +9,10 @@ namespace Tests.Catalog;
 public class QueryGetProductsTests
 {
     private IServiceProvider serviceProvider { get; set; }
-    private ICatalogService catalogService { get; set; }
+    private IProductService ProductService { get; set; }
+    private IProductTypeService ProductTypeService { get; set; }
 
-    private ProductType ProductType { get; set; }
+    private ProductTypeDto ProductType { get; set; }
 
     [SetUp]
     public async Task Setup()
@@ -20,10 +21,11 @@ public class QueryGetProductsTests
         services.AddInfrastructureUseInMemoryDatabase(Guid.NewGuid().ToString());
         services.AddUseCases();
         serviceProvider = services.BuildServiceProvider();
-        catalogService = serviceProvider.GetRequiredService<ICatalogService>();
+        ProductService = serviceProvider.GetRequiredService<IProductService>();
+        ProductTypeService = serviceProvider.GetRequiredService<IProductTypeService>();
 
         var command = new CommandProductTypeCreate("Трансмиссионные масла");
-        var Result = await catalogService.ProductTypeCreate(command);
+        var Result = await ProductTypeService.ProductTypeCreate(command);
         ProductType = Result.Value;
     }
 
@@ -32,7 +34,7 @@ public class QueryGetProductsTests
     public async Task GetProductsOk()
     {
         var request = new QueryGetProducts(ProductType.ProductTypeId);
-        var Result = await catalogService.GetProducts(request);
+        var Result = await ProductService.GetProducts(request);
 
         Result.Success.Should().BeTrue();
     }

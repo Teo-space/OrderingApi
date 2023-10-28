@@ -5,14 +5,8 @@ namespace OrderingApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class OrdersController : ControllerBase
+public class OrdersController(IOrderingService orderingService) : ControllerBase
 {
-    private readonly IOrderingService orderingService;
-    public OrdersController(IOrderingService orderingService)
-    {
-        this.orderingService = orderingService;
-
-    }
 
     /// <summary>
     /// Запрос получения списка заказов по конкретному клиенту за выбранный временной период, отсортированный по дате создания.
@@ -21,7 +15,7 @@ public class OrdersController : ControllerBase
     /// <returns></returns>
     [HttpGet]
     [OutputCache(Duration = 30)]
-    public async Task<Result<IReadOnlyCollection<Order>>> GetCustomerOrders([FromQuery] QueryGetCustomerOrders query)
+    public async Task<Result<IReadOnlyCollection<OrderDto>>> GetCustomerOrders([FromQuery] QueryGetCustomerOrders query)
         => await orderingService.GetCustomerOrders(query);
 
     //CommandOrderCheckOut
@@ -32,7 +26,7 @@ public class OrdersController : ControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<Result<Order>> OrderCheckOut([FromBody] CommandOrderCheckOut command)
+    public async Task<Result<OrderDto>> OrderCheckOut([FromBody] CommandOrderCheckOut command)
         => await orderingService.OrderCheckOut(command);
 
 

@@ -7,14 +7,8 @@ namespace OrderingApi.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class OrderCartController : ControllerBase
+public class OrderCartController(IOrderCartService orderCartService) : ControllerBase
 {
-    private readonly IOrderCartService orderCartService;
-    public OrderCartController(IOrderCartService orderCartService)
-    {
-        this.orderCartService = orderCartService;
-    }
-
 
     /// <summary>
     /// Получение списка товаров в корзине
@@ -23,7 +17,7 @@ public class OrderCartController : ControllerBase
     /// <returns></returns>
     [OutputCache(Duration = 15)]
     [HttpGet]
-    public async Task<Result<IReadOnlyCollection<OrderCartItem>>> OrderCartItemsGet([FromQuery] QueryOrderCartItemsGet query)
+    public async Task<Result<IReadOnlyCollection<OrderCartItemDto>>> OrderCartItemsGet([FromQuery] QueryOrderCartItemsGet query)
         => await orderCartService.OrderCartItemsGet(query);
 
     
@@ -33,7 +27,7 @@ public class OrderCartController : ControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<Result<OrderCartItem>> OrderCartItemAdd([FromBody] CommandOrderCartItemAdd command)
+    public async Task<Result<OrderCartItemDto>> OrderCartItemAdd([FromBody] CommandOrderCartItemAdd command)
         => await orderCartService.AddItem(command);
     
     /// <summary>
@@ -42,7 +36,7 @@ public class OrderCartController : ControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpDelete]
-    public async Task<Result<OrderCartItem>> OrderCartItemRemove([FromBody] CommandOrderCartItemRemove command)
+    public async Task<Result<OrderCartItemDto>> OrderCartItemRemove([FromBody] CommandOrderCartItemRemove command)
         => await orderCartService.RemoveItem(command);
 
 
@@ -52,7 +46,7 @@ public class OrderCartController : ControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpDelete("Clear/")]
-    public async Task<Result<IReadOnlyCollection<OrderCartItem>>> OrderCartItemsClear([FromBody] CommandOrderCartItemsClear command)
+    public async Task<Result<IReadOnlyCollection<OrderCartItemDto>>> OrderCartItemsClear([FromBody] CommandOrderCartItemsClear command)
         => await orderCartService.CartClear(command);
 
 
@@ -62,7 +56,7 @@ public class OrderCartController : ControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpPut("Increment/")]
-    public async Task<Result<OrderCartItem>> OrderCartItemIncrement([FromBody] CommandOrderCartItemIncrement command)
+    public async Task<Result<OrderCartItemDto>> OrderCartItemIncrement([FromBody] CommandOrderCartItemIncrement command)
         => await orderCartService.IncrementItemQuanity(command);
 
 
@@ -72,7 +66,7 @@ public class OrderCartController : ControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpPut("Decrement")]
-    public async Task<Result<OrderCartItem>> OrderCartItemDecrement([FromBody] CommandOrderCartItemDecrement command)
+    public async Task<Result<OrderCartItemDto>> OrderCartItemDecrement([FromBody] CommandOrderCartItemDecrement command)
         => await orderCartService.DecrementItemQuanity(command);
 
 

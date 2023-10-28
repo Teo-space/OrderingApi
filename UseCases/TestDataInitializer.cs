@@ -15,14 +15,15 @@ public static class TestDataInitializer
 
     static void ScopedContext(IServiceScope serviceScope)
     {
-        ICatalogService     catalogService = serviceScope.ServiceProvider.GetRequiredService<ICatalogService>();
+        IProductService productService = serviceScope.ServiceProvider.GetRequiredService<IProductService>();
+        IProductTypeService productTypeService = serviceScope.ServiceProvider.GetRequiredService<IProductTypeService>();
         ICustomersService   customersService = serviceScope.ServiceProvider.GetRequiredService<ICustomersService>();
         IOrderCartService   orderCartService = serviceScope.ServiceProvider.GetRequiredService<IOrderCartService>();
         IOrderingService    orderingService = serviceScope.ServiceProvider.GetRequiredService<IOrderingService>();
         AppDbContext            dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         //Проверка что тестовые данные уже есть
-        var types = catalogService.GetProductTypes()
+        var types = productTypeService.GetProductTypes()
             .GetAwaiter().GetResult();
         if(types.Success && types.Value.Any())
         {
@@ -38,33 +39,33 @@ public static class TestDataInitializer
 
         //Создаем несколько типов товаров
         //CommandProductTypeCreate(string Name)
-        var catMotorOilsResult = catalogService.ProductTypeCreate(new("Моторные масла"))
+        var catMotorOilsResult = productTypeService.ProductTypeCreate(new("Моторные масла"))
             .GetAwaiter().GetResult();
         var catMotorOils = catMotorOilsResult.Value;
-        var catTransmissionOilsResult = catalogService.ProductTypeCreate(new("Трансмиссионные масла"))
+        var catTransmissionOilsResult = productTypeService.ProductTypeCreate(new("Трансмиссионные масла"))
             .GetAwaiter().GetResult();
-        var catPowerSteeringOilsResult = catalogService.ProductTypeCreate(new("Масла для ГУР"))
+        var catPowerSteeringOilsResult = productTypeService.ProductTypeCreate(new("Масла для ГУР"))
             .GetAwaiter().GetResult();
-        var catOtherOilsResult = catalogService.ProductTypeCreate(new("Масла прочие"))
+        var catOtherOilsResult = productTypeService.ProductTypeCreate(new("Масла прочие"))
             .GetAwaiter().GetResult();
 
 
         //Создаем несколько товаров
         //CommandProductCreate(IdType ProductTypeId, string Name, double Price, double QuanityInStock
-        var OilMobil1Result = catalogService.ProductCreate(new CommandProductCreate(
+        var OilMobil1Result = productService.ProductCreate(new CommandProductCreate(
             catMotorOilsResult.Value.ProductTypeId, 
             "MOBIL 1 Synthetic Motor oil 0W-40",
             1150, 32d))
             .GetAwaiter().GetResult();
         var OilMobil1 = OilMobil1Result.Value;
 
-        var OilMobilSuperResult = catalogService.ProductCreate(new CommandProductCreate(
+        var OilMobilSuperResult = productService.ProductCreate(new CommandProductCreate(
             catMotorOilsResult.Value.ProductTypeId,
             "MOBIL Super 2000 X1 10W-40",
             2673, 14d))
             .GetAwaiter().GetResult();
 
-        var OilMobilDelvacResult = catalogService.ProductCreate(new CommandProductCreate(
+        var OilMobilDelvacResult = productService.ProductCreate(new CommandProductCreate(
             catMotorOilsResult.Value.ProductTypeId,
             "MOBIL Delvac MX 15W-40",
             15777, 15d))

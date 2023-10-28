@@ -8,7 +8,7 @@ namespace Tests.Catalog.ProductTypes;
 public class QueryGetProductTypeByNameTests
 {
     private IServiceProvider serviceProvider { get; set; }
-    private ICatalogService catalogService { get; set; }
+    private IProductTypeService ProductTypeService { get; set; }
 
     [SetUp]
     public async Task Setup()
@@ -17,17 +17,17 @@ public class QueryGetProductTypeByNameTests
         services.AddInfrastructureUseInMemoryDatabase(Guid.NewGuid().ToString());
         services.AddUseCases();
         serviceProvider = services.BuildServiceProvider();
-        catalogService = serviceProvider.GetRequiredService<ICatalogService>();
+        ProductTypeService = serviceProvider.GetRequiredService<IProductTypeService>();
 
         var command = new CommandProductTypeCreate("Трансмиссионные масла");
-        var Result = await catalogService.ProductTypeCreate(command);
+        var Result = await ProductTypeService.ProductTypeCreate(command);
     }
 
     [Test]
     public async Task GetProductTypeByNameOk()
     {
         var request = new QueryGetProductTypeByName("Трансмиссионные масла");
-        var Result = await catalogService.GetProductTypeByName(request);
+        var Result = await ProductTypeService.GetProductTypeByName(request);
 
         Result.Success.Should().BeTrue();
     }
@@ -36,7 +36,7 @@ public class QueryGetProductTypeByNameTests
     public async Task GetProductTypeByNameNotFound()//"Моторные масла"
     {
         var request = new QueryGetProductTypeByName("Тест");
-        var Result = await catalogService.GetProductTypeByName(request);
+        var Result = await ProductTypeService.GetProductTypeByName(request);
 
 
         Result.Success.Should().BeFalse();
@@ -47,7 +47,7 @@ public class QueryGetProductTypeByNameTests
     public async Task GetProductTypeByNameNameTooLong()
     {
         var request = new QueryGetProductTypeByName("Моторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные маслаМоторные масла");
-        var ResultExists = await catalogService.GetProductTypeByName(request);
+        var ResultExists = await ProductTypeService.GetProductTypeByName(request);
 
         ResultExists.Success.Should().BeFalse();
     }

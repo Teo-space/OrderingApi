@@ -7,40 +7,46 @@ public interface IOrderCartService
     /// </summary>
     /// <param name="query"></param>
     /// <returns></returns>
-    public Task<Result<IReadOnlyCollection<OrderCartItem>>> OrderCartItemsGet(QueryOrderCartItemsGet query);
+    public Task<Result<IReadOnlyCollection<OrderCartItemDto>>> OrderCartItemsGet(QueryOrderCartItemsGet query);
+
 
     /// <summary>
     /// Добавление товара в корзину
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public Task<Result<OrderCartItem>> AddItem(CommandOrderCartItemAdd command);
+    public Task<Result<OrderCartItemDto>> AddItem(CommandOrderCartItemAdd command);
+
 
     /// <summary>
     /// Удаление из корзины
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public Task<Result<OrderCartItem>> RemoveItem(CommandOrderCartItemRemove command);
+    public Task<Result<OrderCartItemDto>> RemoveItem(CommandOrderCartItemRemove command);
+
 
     /// <summary>
     /// Очистка корзины
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public Task<Result<IReadOnlyCollection<OrderCartItem>>> CartClear(CommandOrderCartItemsClear command);
+    public Task<Result<IReadOnlyCollection<OrderCartItemDto>>> CartClear(CommandOrderCartItemsClear command);
+
 
     /// <summary>
     /// Инкремент количества товара в корзине
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public Task<Result<OrderCartItem>> IncrementItemQuanity(CommandOrderCartItemIncrement command);
+    public Task<Result<OrderCartItemDto>> IncrementItemQuanity(CommandOrderCartItemIncrement command);
+
 
     /// <summary>
     /// Декремент количества товара в корзине. Возможен до минимального количества (1)
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public Task<Result<OrderCartItem>> DecrementItemQuanity(CommandOrderCartItemDecrement command);
+    public Task<Result<OrderCartItemDto>> DecrementItemQuanity(CommandOrderCartItemDecrement command);
+
 }

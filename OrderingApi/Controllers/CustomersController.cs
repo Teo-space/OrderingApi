@@ -5,14 +5,8 @@ namespace OrderingApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CustomersController : ControllerBase
+public class CustomersController(ICustomersService customersService) : ControllerBase
 {
-    private readonly ICustomersService customersService;
-    public CustomersController(ICustomersService customersService) 
-    {
-        this.customersService = customersService;
-    }
-
 
     /// <summary>
     /// Запрос получения клиента по номеру телефона.
@@ -21,7 +15,7 @@ public class CustomersController : ControllerBase
     /// <returns></returns>
     [OutputCache(Duration = 15)]
     [HttpGet]
-    public async Task<Result<Customer>> CustomerGet([FromQuery] QueryCustomerGet query)
+    public async Task<Result<CustomerDto>> CustomerGet([FromQuery] QueryCustomerGet query)
         => await customersService.CustomerGet(query);
 
 
@@ -31,12 +25,8 @@ public class CustomersController : ControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<Result<Customer>> CustomerCreate([FromBody] CommandCustomerCreate command)
+    public async Task<Result<CustomerDto>> CustomerCreate([FromBody] CommandCustomerCreate command)
         => await customersService.CustomerCreate(command);
-
-
-
-
 
 
 }

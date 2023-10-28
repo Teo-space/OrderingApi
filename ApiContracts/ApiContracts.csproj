@@ -8,5 +8,6 @@
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 </Project>

@@ -5,7 +5,7 @@
 /// <param name="OrderId">Идентификатор заказа</param>
 /// <param name="ProductId">Идентификатор продукта</param>
 /// <param name="Quanity">количество</param>
-public record OrderLine(IdType OrderLineId, IdType OrderId, IdType ProductId, double Quanity);
+public record OrderLineDto(IdType OrderLineId, IdType OrderId, IdType ProductId, double Quanity);
 
 
 

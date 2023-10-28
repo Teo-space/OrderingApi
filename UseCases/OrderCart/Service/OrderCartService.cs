@@ -1,34 +1,28 @@
 ﻿using Infrastructure.EntityFrameworkCore;
+using Mapster;
 using Microsoft.Extensions.Logging;
 
 namespace UseCases.OrderCart.Service;
 
 
-internal class OrderCartService : IOrderCartService
+internal class OrderCartService(AppDbContext dbContext, ILogger<OrderCartService> logger) : IOrderCartService
 {
-    private readonly AppDbContext dbContext;
-    private readonly ILogger<OrderCartService> logger;
 
-    public OrderCartService(AppDbContext dbContext, ILogger<OrderCartService> logger)
-    {
-        this.dbContext = dbContext;
-        this.logger = logger;
-    }
-
-
-
-    public async Task<Result<IReadOnlyCollection<OrderCartItem>>> OrderCartItemsGet(QueryOrderCartItemsGet query)
+    /// <summary>
+    /// Получение списка товаров в корзине пользователя
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
+    public async Task<Result<IReadOnlyCollection<OrderCartItemDto>>> OrderCartItemsGet(QueryOrderCartItemsGet query)
     {
         var validator = new QueryOrderCartItemsGet.Validator();
         var result = validator.Validate(query);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
-            return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItem>>(result);
+            return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItemDto>>(result);
         }
-        var Customer = await dbContext
-            .Set<Customer>()
-            .AsNoTracking()
+        var Customer = await dbContext.Customers.AsNoTracking()
             .Where(Customer => Customer.CustomerId == query.CustomerId)
             .Include(x => x.OrderCartItems)
             .FirstOrDefaultAsync();
@@ -36,9 +30,10 @@ internal class OrderCartService : IOrderCartService
         if (Customer is null)
         {
             logger.LogWarning($"[{query.GetType().Name}] Customer({query.CustomerId}) Not Found!");
-            return Result.NotFound<IReadOnlyCollection<OrderCartItem>>($"[{query.GetType().Name}] Customer({query.CustomerId}) Not Found!");
+            return Result.NotFound<IReadOnlyCollection<OrderCartItemDto>>($"[{query.GetType().Name}] Customer({query.CustomerId}) Not Found!");
         }
-        return Result.Ok(Customer.OrderCartItems as IReadOnlyCollection<OrderCartItem>);
+
+        return Customer.OrderCartItems.Adapt<IReadOnlyCollection<OrderCartItemDto>>().Ok();
     }
 
 
@@ -47,18 +42,18 @@ internal class OrderCartService : IOrderCartService
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<Result<OrderCartItem>> AddItem(CommandOrderCartItemAdd command)
+    public async Task<Result<OrderCartItemDto>> AddItem(CommandOrderCartItemAdd command)
     {
         var validator = new CommandOrderCartItemAdd.Validator();
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<OrderCartItem>(result);
+            return Result.InputValidationErrors<OrderCartItemDto>(result);
         }
 
         var Customer = await dbContext
-            .Set<Customer>()
+            .Customers
             .Where(Customer => Customer.CustomerId == command.CustomerId)
             .FirstOrDefaultAsync();
         //Проверка существования пользователя
@@ -66,11 +61,11 @@ internal class OrderCartService : IOrderCartService
         {
             string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) Not Found!";
             logger.LogWarning(message);
-            return Result.NotFound<OrderCartItem>(message);
+            return Result.NotFound<OrderCartItemDto>(message);
         }
 
         var Product = await dbContext
-            .Set<Product>()
+            .Products
             .Where(Product => Product.ProductId == command.ProductId)
             .FirstOrDefaultAsync();
         //Проверка существования товара
@@ -78,23 +73,23 @@ internal class OrderCartService : IOrderCartService
         {
             string message = $"[{command.GetType().Name}] Product({command.ProductId}) Not Found!";
             logger.LogWarning(message);
-            return Result.NotFound<OrderCartItem>(message);
+            return Result.NotFound<OrderCartItemDto>(message);
         }
         var orderCartItemExists = await dbContext
-            .Set<OrderCartItem>()
+            .OrderCartItems
             .Where(x => x.ProductId == Product.ProductId)
             .FirstOrDefaultAsync();
         //Проверка что товар уже в корзине
         if (orderCartItemExists is not null)
         {
-            return Result.Ok(orderCartItemExists);
+            return orderCartItemExists.Adapt<OrderCartItemDto>().Ok();
         }
 
-        var orderCartItem = OrderCartItem.Create(Customer, Product);
-        dbContext.Add(orderCartItem);
+        var orderCartItemCreated = OrderCartItem.Create(Customer, Product);
+        dbContext.Add(orderCartItemCreated);
         await dbContext.SaveChangesAsync();
-        return Result.Ok(orderCartItem);
 
+        return orderCartItemCreated.Adapt<OrderCartItemDto>().Ok();
     }
 
 
@@ -103,17 +98,17 @@ internal class OrderCartService : IOrderCartService
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<Result<OrderCartItem>> RemoveItem(CommandOrderCartItemRemove command)
+    public async Task<Result<OrderCartItemDto>> RemoveItem(CommandOrderCartItemRemove command)
     {
         var validator = new CommandOrderCartItemRemove.Validator();
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<OrderCartItem>(result);
+            return Result.InputValidationErrors<OrderCartItemDto>(result);
         }
 
-        var items = await dbContext.Set<OrderCartItem>()
+        var items = await dbContext.OrderCartItems
             .Where(item => item.CustomerId == command.CustomerId)
             .Where(item => item.ProductId == command.ProductId)
             .ToListAsync();
@@ -122,43 +117,42 @@ internal class OrderCartService : IOrderCartService
         {
             string message = $"[{command.GetType().Name}] OrderCartItem  (ProductId:{command.ProductId}) Not Found!";
             logger.LogWarning(message);
-            return Result.NotFound<OrderCartItem>(message);
+            return Result.NotFound<OrderCartItemDto>(message);
         }
 
         dbContext.Set<OrderCartItem>().RemoveRange(items);
         await dbContext.SaveChangesAsync();
-        return Result.Ok(items.First());
+
+        return items.First().Adapt<OrderCartItemDto>().Ok();
     }
+
 
     /// <summary>
     /// Очистка корзины
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<Result<IReadOnlyCollection<OrderCartItem>>> CartClear(CommandOrderCartItemsClear command)
+    public async Task<Result<IReadOnlyCollection<OrderCartItemDto>>> CartClear(CommandOrderCartItemsClear command)
     {
         var validator = new CommandOrderCartItemsClear.Validator();
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItem>>(result);
+            return Result.InputValidationErrors<IReadOnlyCollection<OrderCartItemDto>>(result);
         }
 
-        var items = await dbContext
-            .Set<OrderCartItem>()
-            .AsNoTracking()
+        var items = await dbContext.OrderCartItems
             .Where(item => item.CustomerId == command.CustomerId)
             .ToListAsync();
-        //Пусто
-        if (!items.Any())
+
+        if (items.Any())
         {
-            return Result.Ok(items as IReadOnlyCollection<OrderCartItem>);
+            dbContext.OrderCartItems.RemoveRange(items);
+            await dbContext.SaveChangesAsync();
         }
 
-        dbContext.Set<OrderCartItem>().RemoveRange(items);
-        await dbContext.SaveChangesAsync();
-        return Result.Ok(items as IReadOnlyCollection<OrderCartItem>);
+        return items.Adapt<IReadOnlyCollection<OrderCartItemDto>>().Ok();
     }
 
 
@@ -167,14 +161,14 @@ internal class OrderCartService : IOrderCartService
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<Result<OrderCartItem>> IncrementItemQuanity(CommandOrderCartItemIncrement command)
+    public async Task<Result<OrderCartItemDto>> IncrementItemQuanity(CommandOrderCartItemIncrement command)
     {
         var validator = new CommandOrderCartItemIncrement.Validator();
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<OrderCartItem>(result);
+            return Result.InputValidationErrors<OrderCartItemDto>(result);
         }
 
         var item = await dbContext.Set<OrderCartItem>()
@@ -186,12 +180,12 @@ internal class OrderCartService : IOrderCartService
         {
             string message = $"[{command.GetType().Name}] OrderCartItem(ProductId:{command.ProductId}) Not Found!";
             logger.LogWarning(message);
-            return Result.NotFound<OrderCartItem>(message);
+            return Result.NotFound<OrderCartItemDto>(message);
         }
         item.Increment();
-
         await dbContext.SaveChangesAsync();
-        return Result.Ok(item);
+
+        return item.Adapt<OrderCartItemDto>().Ok();
     }
 
     /// <summary>
@@ -199,14 +193,14 @@ internal class OrderCartService : IOrderCartService
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<Result<OrderCartItem>> DecrementItemQuanity(CommandOrderCartItemDecrement command)
+    public async Task<Result<OrderCartItemDto>> DecrementItemQuanity(CommandOrderCartItemDecrement command)
     {
         var validator = new CommandOrderCartItemDecrement.Validator();
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<OrderCartItem>(result);
+            return Result.InputValidationErrors<OrderCartItemDto>(result);
         }
 
         var item = await dbContext.Set<OrderCartItem>()
@@ -218,13 +212,13 @@ internal class OrderCartService : IOrderCartService
         {
             string message = $"[{command.GetType().Name}] OrderCartItem(:ProductId{command.ProductId}) Not Found!";
             logger.LogWarning(message);
-            return Result.NotFound<OrderCartItem>(message);
+            return Result.NotFound<OrderCartItemDto>(message);
         }
         //Можно хранить величину инкремента в товаре, подгружать его
         item.Decrement(/*Product*/);
-
         await dbContext.SaveChangesAsync();
-        return Result.Ok(item);
+
+        return item.Adapt<OrderCartItemDto>().Ok();
     }
 
 

@@ -1,34 +1,25 @@
 ﻿using Infrastructure.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+using Mapster;
 using Microsoft.Extensions.Logging;
 
 namespace UseCases.Ordering.Service;
 
-internal class OrderingService : IOrderingService
+internal class OrderingService(AppDbContext dbContext, ILogger<OrderingService> logger) : IOrderingService
 {
-    private readonly AppDbContext dbContext;
-    private readonly ILogger<OrderingService> logger;
-    public OrderingService(AppDbContext dbContext, ILogger<OrderingService> logger)
-    {
-        this.dbContext = dbContext;
-        this.logger = logger;
-    }
-
-
 
     /// <summary>
     /// Метод получения списка заказов по конкретному клиенту за выбранный временной период, отсортированный по дате создания.
     /// </summary>
     /// <param name="query"></param>
     /// <returns></returns>
-    public async Task<Result<IReadOnlyCollection<Order>>> GetCustomerOrders(QueryGetCustomerOrders query)//a0e48a01-090d-3378-b939-93494fb4ab2a
+    public async Task<Result<IReadOnlyCollection<OrderDto>>> GetCustomerOrders(QueryGetCustomerOrders query)//a0e48a01-090d-3378-b939-93494fb4ab2a
     {
         var validator = new QueryGetCustomerOrders.Validator();
         var result = validator.Validate(query);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{query.GetType().Name}] Invalid  {query}");
-            return Result.InputValidationErrors<IReadOnlyCollection<Order>>(result);
+            return Result.InputValidationErrors<IReadOnlyCollection<OrderDto>>(result);
         }
         logger.LogInformation(query.ToString());
 
@@ -41,7 +32,7 @@ internal class OrderingService : IOrderingService
             .OrderBy(order => order.CreatedAt)
             .ToListAsync();
 
-        return Result.Ok(Orders as IReadOnlyCollection<Order>);
+        return Orders.Adapt<IReadOnlyCollection<OrderDto>>().Ok();
     }
 
 
@@ -49,18 +40,18 @@ internal class OrderingService : IOrderingService
 
     /// <summary>
     /// Метод формирования заказа с проверкой наличия требуемого количества товара на складе, 
-    //а также уменьшение доступного количества товара на складе в БД в случае успешного создания заказа.
+    /// а также уменьшение доступного количества товара на складе в БД в случае успешного создания заказа.
     /// </summary>
-    /// <param name="query"></param>
+    /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<Result<Order>> OrderCheckOut(CommandOrderCheckOut command)
+    public async Task<Result<OrderDto>> OrderCheckOut(CommandOrderCheckOut command)
     {
         var validator = new CommandOrderCheckOut.Validator();
         var result = validator.Validate(command);
         if (!result.IsValid)
         {
             logger.LogWarning($"[{command.GetType().Name}] Invalid  {command}");
-            return Result.InputValidationErrors<Order>(result);
+            return Result.InputValidationErrors<OrderDto>(result);
         }
 
         using (var transaction = dbContext.Database.BeginTransaction())
@@ -78,13 +69,13 @@ internal class OrderingService : IOrderingService
                 {
                     string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) Not Found!";
                     logger.LogWarning(message);
-                    return Result.NotFound<Order>(message);
+                    return Result.NotFound<OrderDto>(message);
                 }
                 if (!Customer.OrderCartItems.Any())
                 {
                     string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) OrderCart is Empty!";
                     logger.LogWarning(message);
-                    return Result.InvalidOperation<Order>(message);
+                    return Result.InvalidOperation<OrderDto>(message);
                 }
 
                 var ProductNotFound = Customer.OrderCartItems
@@ -94,7 +85,7 @@ internal class OrderingService : IOrderingService
                 {
                     string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) Include OrderCartItems.Product or Product not exists!";
                     logger.LogWarning(message);
-                    return Result.InvalidOperation<Order>(message);
+                    return Result.InvalidOperation<OrderDto>(message);
                 }
                 var NotEnoughtProduct = Customer.OrderCartItems
                     .Where(item => item.Product.QuanityInStock < item.Quanity)
@@ -103,7 +94,7 @@ internal class OrderingService : IOrderingService
                 {
                     string message = $"[{command.GetType().Name}] Customer({command.CustomerId}) Not Enought Products in Stock {string.Join(", ", NotEnoughtProduct)}";
                     logger.LogWarning(message);
-                    return Result.InvalidOperation<Order>(message);
+                    return Result.InvalidOperation<OrderDto>(message);
                 }
 
                 var order = Order.Create(Customer);
@@ -121,7 +112,7 @@ internal class OrderingService : IOrderingService
 
                 dbContext.SaveChanges();
                 transaction.Commit();
-                return Result.Ok(order);
+                return order.Adapt<OrderDto>().Ok();
             }
             catch (Exception ex)
             {

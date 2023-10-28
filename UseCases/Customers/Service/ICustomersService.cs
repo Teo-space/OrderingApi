@@ -1,10 +1,24 @@
 ﻿namespace UseCases.Customers.Service;
 
+/// <summary>
+/// Сервис для работы клиентами(покупателями)
+/// </summary>
 public interface ICustomersService
 {
-    public Task<Result<Customer>> CustomerCreate(CommandCustomerCreate command);
+    /// <summary>
+    /// Создание пользователя
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
+    public Task<Result<CustomerDto>> CustomerCreate(CommandCustomerCreate command);
 
-    public Task<Result<Customer>> CustomerGet(QueryCustomerGet query);
+
+    /// <summary>
+    /// Получение клиента по номеру телефона
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
+    public Task<Result<CustomerDto>> CustomerGet(QueryCustomerGet query);
 
 
 }
