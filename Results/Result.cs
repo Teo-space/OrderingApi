@@ -11,7 +11,8 @@
 public record Result<T>(T Value, bool Success, string Type, string Detail, IReadOnlyCollection<string> Errors)
 {
     public static implicit operator T(Result<T> Result) => Result.Value;
-    public static explicit operator Result<T>(T o) => Result.Ok(o);
+    public static implicit operator Result<T>(T o) => Result.Ok(o);
+
     public static implicit operator string(Result<T> Result)
         => $"Result<{typeof(T)}>(Success:{Result.Success}, Type: {Result.Type}) Value: {Result?.Value?.ToString()}";
 }

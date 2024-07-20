@@ -1,4 +1,6 @@
-﻿namespace UseCases.Customers.Service;
+﻿using UseCases.Customers;
+
+namespace Interfaces.Services.Customers;
 
 /// <summary>
 /// Сервис для работы клиентами(покупателями)

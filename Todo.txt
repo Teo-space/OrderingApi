@@ -1,0 +1,16 @@
+Models project
+
+change records to
+public sealed record SomeModel
+{
+	public string Name {get; init;}
+}
+
+
+
+update Result
+add using Nugets
+
+update serilog
+
+rename OrderCart to Basket

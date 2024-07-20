@@ -1,7 +1,4 @@
-﻿using Domain.Ordering;
-using NUlid;
-
-namespace Infrastructure.EntityFrameworkCore.EntityTypeConfigurations;
+﻿namespace Infrastructure.EntityFrameworkCore.EntityTypeConfigurations;
 
 public class EntityConfigurationOrderLine : IEntityTypeConfiguration<OrderLine>
 {

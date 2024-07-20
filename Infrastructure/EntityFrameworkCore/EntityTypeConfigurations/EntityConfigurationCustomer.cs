@@ -1,6 +1,4 @@
-﻿using Domain.Customers;
-
-namespace Infrastructure.EntityFrameworkCore.EntityTypeConfigurations;
+﻿namespace Infrastructure.EntityFrameworkCore.EntityTypeConfigurations;
 
 public class EntityConfigurationCustomer : IEntityTypeConfiguration<Customer>
 {
@@ -15,12 +13,8 @@ public class EntityConfigurationCustomer : IEntityTypeConfiguration<Customer>
 
         builder.HasIndex(x => x.PhoneNumber);
 
-
-
         builder.Property(x => x.PhoneNumber).HasMaxLength(20);//Unique???
         builder.Property(x => x.UserName).HasMaxLength(100);
-
-
 
         builder.HasMany(Customer => Customer.OrderCartItems)
             .WithOne(OrderCartItem => OrderCartItem.Customer)
@@ -34,9 +28,6 @@ public class EntityConfigurationCustomer : IEntityTypeConfiguration<Customer>
             .HasForeignKey(Order => Order.CustomerId)
             .OnDelete(DeleteBehavior.NoAction);
 
-
     }
-
-
 
 }

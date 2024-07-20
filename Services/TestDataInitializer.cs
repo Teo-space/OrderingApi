@@ -1,4 +1,8 @@
-﻿using Infrastructure.EntityFrameworkCore;
+﻿using Interfaces.DbContexts;
+using Interfaces.Services.Catalog;
+using Interfaces.Services.Customers;
+using Interfaces.Services.OrderCart;
+using Interfaces.Services.Ordering;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
@@ -17,10 +21,10 @@ public static class TestDataInitializer
     {
         IProductService productService = serviceScope.ServiceProvider.GetRequiredService<IProductService>();
         IProductTypeService productTypeService = serviceScope.ServiceProvider.GetRequiredService<IProductTypeService>();
-        ICustomersService   customersService = serviceScope.ServiceProvider.GetRequiredService<ICustomersService>();
-        IOrderCartService   orderCartService = serviceScope.ServiceProvider.GetRequiredService<IOrderCartService>();
-        IOrderingService    orderingService = serviceScope.ServiceProvider.GetRequiredService<IOrderingService>();
-        AppDbContext            dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+        ICustomersService customersService = serviceScope.ServiceProvider.GetRequiredService<ICustomersService>();
+        IOrderCartService orderCartService = serviceScope.ServiceProvider.GetRequiredService<IOrderCartService>();
+        IOrderingService orderingService = serviceScope.ServiceProvider.GetRequiredService<IOrderingService>();
+        IAppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<IAppDbContext>();
 
         //Проверка что тестовые данные уже есть
         var types = productTypeService.GetProductTypes()

@@ -1,6 +1,6 @@
 ﻿using FluentValidation.AspNetCore;
 using Infrastructure.EntityFrameworkCore;
-using Microsoft.AspNetCore.Builder;
+using Interfaces.DbContexts;
 
 public static class DependencyInjection__ForumsInfrastructure
 {
@@ -22,7 +22,7 @@ public static class DependencyInjection__ForumsInfrastructure
         {
             options.UseSqlServer(ConnectionString);
         });
-
+        Services.AddScoped<IAppDbContext, AppDbContext>();
     }
 
 
@@ -36,7 +36,9 @@ public static class DependencyInjection__ForumsInfrastructure
 		{
 			options.UseSqlite(ConnectionString);
 		});
-	}
+
+        Services.AddScoped<IAppDbContext, AppDbContext>();
+    }
 
 	public static void AddInfrastructureUseInMemoryDatabase(this IServiceCollection Services, string DataBaseName)
 	{
@@ -48,11 +50,12 @@ public static class DependencyInjection__ForumsInfrastructure
 			options.UseInMemoryDatabase(DataBaseName);
 		});
 
-	}
+        Services.AddScoped<IAppDbContext, AppDbContext>();
+    }
 
 
-    public static void AddInfrastructureUseMySql(this IServiceCollection Services
-        , string ConnectionString = "Server=localhost;Uid=mysql;Pwd=mysql;Database=OrderingApi;")
+    public static void AddInfrastructureUseMySql(this IServiceCollection Services, 
+        string ConnectionString = "Server=localhost;Uid=mysql;Pwd=mysql;Database=OrderingApi;")
 	{
         Services.Configure();
 
@@ -61,7 +64,8 @@ public static class DependencyInjection__ForumsInfrastructure
 			options.UseMySql(ConnectionString, ServerVersion.AutoDetect(ConnectionString));
 		});
 
-	}
+        Services.AddScoped<IAppDbContext, AppDbContext>();
+    }
 
 
 

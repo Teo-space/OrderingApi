@@ -1,4 +1,6 @@
-﻿namespace UseCases.Ordering.Service;
+﻿using UseCases.Ordering;
+
+namespace Interfaces.Services.Ordering;
 
 /// <summary>
 /// Сервис заказов
@@ -22,5 +24,5 @@ public interface IOrderingService
     /// <returns></returns>
     public Task<Result<OrderDto>> OrderCheckOut(CommandOrderCheckOut command);
 
-    
+
 }

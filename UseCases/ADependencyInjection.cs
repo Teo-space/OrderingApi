@@ -1,8 +1,6 @@
 ﻿using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using UseCases.Customers.Service;
 
 public static class ADependencyInjection
 {
@@ -14,26 +12,6 @@ public static class ADependencyInjection
         Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         Services.AddFluentValidationAutoValidation();
         Services.AddFluentValidationClientsideAdapters();
-
-
-        Services.AddScoped<ICustomersService, CustomersService>();
-        Services.AddScoped<IOrderCartService, OrderCartService>();
-        Services.AddScoped<IOrderingService, OrderingService>();
-        Services.AddScoped<IProductTypeService, ProductTypeService>();
-        Services.AddScoped<IProductService, ProductService>();
-        
-
-
-
-
-
-
     }
-
-
-
-
-
-
 
 }

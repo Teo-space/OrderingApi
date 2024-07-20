@@ -1,10 +1,11 @@
-﻿using Infrastructure.EntityFrameworkCore;
+﻿using Interfaces.DbContexts;
+using Interfaces.Services.Catalog;
 using Mapster;
 using Microsoft.Extensions.Logging;
 
 namespace UseCases.Catalog.Service;
 
-internal class ProductTypeService(AppDbContext dbContext, ILogger<ProductTypeService> logger) : IProductTypeService
+internal class ProductTypeService(IAppDbContext dbContext, ILogger<ProductTypeService> logger) : IProductTypeService
 {
 
     /// <summary>
@@ -17,9 +18,9 @@ internal class ProductTypeService(AppDbContext dbContext, ILogger<ProductTypeSer
             .OrderBy(x => x.Name)
             .ProjectToType<ProductTypeDto>()
             .ToListAsync();
+
         return ProductTypes.Ok();
     }
-
 
     /// <summary>
     /// Получение товара по имени
@@ -44,9 +45,9 @@ internal class ProductTypeService(AppDbContext dbContext, ILogger<ProductTypeSer
             logger.LogWarning($"[{query.GetType().Name}] ProductType NotFound {query.Name}");
             return Result.NotFound<ProductTypeDto>(query.Name);
         }
+
         return Result.Ok(ProductType);
     }
-
 
     /// <summary>
     /// Создание нового типа товаров
@@ -76,10 +77,5 @@ internal class ProductTypeService(AppDbContext dbContext, ILogger<ProductTypeSer
 
         return productType.Adapt<ProductTypeDto>().Ok();
     }
-
-
-
-
-
 
 }

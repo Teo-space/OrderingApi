@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		
@@ -20,8 +20,8 @@
 
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />
 
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="*" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 
 		<PackageReference Include="Serilog" Version="3.0.1" />
 		<PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
@@ -39,6 +39,7 @@
 	  <ProjectReference Include="..\Domain\Domain.csproj" />
 	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	  <ProjectReference Include="..\Results\Results.csproj" />
+	  <ProjectReference Include="..\Services\Services.csproj" />
 	  <ProjectReference Include="..\UseCases\UseCases.csproj" />
 	</ItemGroup>
 

@@ -1,11 +1,12 @@
-﻿using Infrastructure.EntityFrameworkCore;
+﻿using Interfaces.DbContexts;
+using Interfaces.Services.OrderCart;
 using Mapster;
 using Microsoft.Extensions.Logging;
 
 namespace UseCases.OrderCart.Service;
 
 
-internal class OrderCartService(AppDbContext dbContext, ILogger<OrderCartService> logger) : IOrderCartService
+internal class OrderCartService(IAppDbContext dbContext, ILogger<OrderCartService> logger) : IOrderCartService
 {
 
     /// <summary>

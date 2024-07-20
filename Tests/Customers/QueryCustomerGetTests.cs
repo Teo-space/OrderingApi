@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using UseCases.Customers.Service;
+﻿using Interfaces.Services.Customers;
+using Microsoft.Extensions.DependencyInjection;
 using UseCases.Customers;
 
 namespace Tests.Customers;

@@ -2,10 +2,7 @@ using Microsoft.AspNetCore.OutputCaching;
 
 namespace OrderingApi.Controllers;
 
-
-[ApiController]
-[Route("[controller]")]
-public class TestController : ControllerBase
+public class TestController : ApiBaseController
 {
     private readonly ILogger<TestController> logger;
 

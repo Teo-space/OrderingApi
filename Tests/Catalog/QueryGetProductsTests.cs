@@ -1,4 +1,5 @@
 ﻿using Domain.Catalog;
+using Interfaces.Services.Catalog;
 using Microsoft.Extensions.DependencyInjection;
 using UseCases.Catalog;
 using UseCases.Catalog.Service;

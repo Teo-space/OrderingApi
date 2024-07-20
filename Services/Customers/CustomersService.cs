@@ -1,4 +1,5 @@
-﻿using Infrastructure.EntityFrameworkCore;
+﻿using Interfaces.DbContexts;
+using Interfaces.Services.Customers;
 using Mapster;
 using Microsoft.Extensions.Logging;
 
@@ -7,9 +8,8 @@ namespace UseCases.Customers.Service;
 /// <summary>
 /// Сервис для работы клиентами(покупателями)
 /// </summary>
-internal class CustomersService(AppDbContext dbContext, ILogger<CustomersService> logger) : ICustomersService
+internal class CustomersService(IAppDbContext dbContext, ILogger<CustomersService> logger) : ICustomersService
 {
-
 
     /// <summary>
     /// Создание клиента
@@ -34,13 +34,12 @@ internal class CustomersService(AppDbContext dbContext, ILogger<CustomersService
         }
 
         var customer = Customer.Create(command.PhoneNumber, command.UserName);
-        await dbContext.AddAsync(customer);
+
+        dbContext.Add(customer);
         await dbContext.SaveChangesAsync();
 
         return customer.Adapt<CustomerDto>().Ok();
     }
-
-
 
     /// <summary>
     /// Получение клиента по номеру телефона
@@ -71,11 +70,4 @@ internal class CustomersService(AppDbContext dbContext, ILogger<CustomersService
         }
         return Customer.Adapt<CustomerDto>().Ok(); 
     }
-
-
-
-
-
-
-
 }

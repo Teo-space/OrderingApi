@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using UseCases.Catalog.Service;
-using UseCases.Customers.Service;
+﻿using Interfaces.Services.Catalog;
+using Microsoft.Extensions.DependencyInjection;
 using UseCases.Customers;
 
 namespace Tests.Catalog.ProductTypes;

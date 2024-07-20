@@ -1,14 +1,12 @@
-﻿using FluentValidation;
-using Infrastructure.EntityFrameworkCore;
+﻿using Interfaces.DbContexts;
+using Interfaces.Services.Catalog;
 using Mapster;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace UseCases.Catalog.Service;
 
 
-internal class ProductService(AppDbContext dbContext, ILogger<ProductService> logger) : IProductService
+internal class ProductService(IAppDbContext dbContext, ILogger<ProductService> logger) : IProductService
 {
 
     /// <summary>
@@ -78,7 +76,6 @@ internal class ProductService(AppDbContext dbContext, ILogger<ProductService> lo
         return product.Adapt<ProductDto>().Ok();
 
     }
-
 
 }
 

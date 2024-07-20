@@ -1,7 +1,4 @@
-﻿using Domain.OrderingCart;
-using NUlid;
-
-namespace Infrastructure.EntityFrameworkCore.EntityTypeConfigurations;
+﻿namespace Infrastructure.EntityFrameworkCore.EntityTypeConfigurations;
 
 public class EntityConfigurationOrderCartItem : IEntityTypeConfiguration<OrderCartItem>
 {
@@ -35,8 +32,5 @@ public class EntityConfigurationOrderCartItem : IEntityTypeConfiguration<OrderCa
             .OnDelete(DeleteBehavior.NoAction);
 
     }
-
-
-
 }
 

@@ -1,16 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Interfaces.Services.Catalog;
 using Microsoft.AspNetCore.OutputCaching;
-using UseCases.Catalog;
-using UseCases.Catalog.Service;
 
 namespace OrderingApi.Controllers;
 
 /// <summary>
 /// Контроллер для работы с каталогом Товаров
 /// </summary>
-[Route("api/[controller]")]
-[ApiController]
-public class ProductTypeController(IProductTypeService productService) : ControllerBase
+public class ProductTypeController(IProductTypeService productService) : ApiBaseController
 {
 
     /// <summary>

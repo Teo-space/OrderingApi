@@ -1,4 +1,6 @@
-﻿namespace UseCases.Catalog.Service;
+﻿using UseCases.Customers;
+
+namespace Interfaces.Services.Catalog;
 
 public interface IProductTypeService
 {

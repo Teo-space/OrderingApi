@@ -1,10 +1,11 @@
-﻿using Infrastructure.EntityFrameworkCore;
+﻿using Interfaces.DbContexts;
+using Interfaces.Services.Ordering;
 using Mapster;
 using Microsoft.Extensions.Logging;
 
 namespace UseCases.Ordering.Service;
 
-internal class OrderingService(AppDbContext dbContext, ILogger<OrderingService> logger) : IOrderingService
+internal class OrderingService(IAppDbContext dbContext, ILogger<OrderingService> logger) : IOrderingService
 {
 
     /// <summary>
@@ -12,7 +13,8 @@ internal class OrderingService(AppDbContext dbContext, ILogger<OrderingService> 
     /// </summary>
     /// <param name="query"></param>
     /// <returns></returns>
-    public async Task<Result<IReadOnlyCollection<OrderDto>>> GetCustomerOrders(QueryGetCustomerOrders query)//a0e48a01-090d-3378-b939-93494fb4ab2a
+    public async Task<Result<IReadOnlyCollection<OrderDto>>> GetCustomerOrders(QueryGetCustomerOrders query)
+        //a0e48a01-090d-3378-b939-93494fb4ab2a
     {
         var validator = new QueryGetCustomerOrders.Validator();
         var result = validator.Validate(query);
@@ -34,9 +36,6 @@ internal class OrderingService(AppDbContext dbContext, ILogger<OrderingService> 
 
         return Orders.Adapt<IReadOnlyCollection<OrderDto>>().Ok();
     }
-
-
-
 
     /// <summary>
     /// Метод формирования заказа с проверкой наличия требуемого количества товара на складе, 
@@ -112,6 +111,7 @@ internal class OrderingService(AppDbContext dbContext, ILogger<OrderingService> 
 
                 dbContext.SaveChanges();
                 transaction.Commit();
+
                 return order.Adapt<OrderDto>().Ok();
             }
             catch (Exception ex)
@@ -121,10 +121,5 @@ internal class OrderingService(AppDbContext dbContext, ILogger<OrderingService> 
             }
         }
     }
-
-
-
-
-
 
 }

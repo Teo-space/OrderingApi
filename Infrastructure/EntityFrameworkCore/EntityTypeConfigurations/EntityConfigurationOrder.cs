@@ -16,17 +16,12 @@ public class EntityConfigurationOrder : IEntityTypeConfiguration<Order>
             //.HasConversion(x => x.ToGuid(), x => new Ulid(x))
             ;
 
-
-
         builder.HasMany(Order => Order.OrderLines)
             .WithOne(OrderLine => OrderLine.Order)
             .HasPrincipalKey(Order => Order.OrderId)
             .HasForeignKey(OrderLine => OrderLine.OrderLineId)
             .OnDelete(DeleteBehavior.NoAction);
 
-
     }
-
-
 
 }

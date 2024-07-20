@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using UseCases.Catalog;
+using UseCases.Customers;
 
-namespace UseCases.Catalog.Service;
+namespace Interfaces.Services.Catalog;
 
 /// <summary>
 /// Сервис для работы с товарами
 /// </summary>
-public  interface IProductService
+public interface IProductService
 {
     /// <summary>
     /// Получение списка товаров

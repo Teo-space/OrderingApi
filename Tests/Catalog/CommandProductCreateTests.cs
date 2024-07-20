@@ -1,6 +1,5 @@
-﻿using Domain.Catalog;
+﻿using Interfaces.Services.Catalog;
 using Microsoft.Extensions.DependencyInjection;
-using UseCases.Catalog.Service;
 using UseCases.Customers;
 
 namespace Tests.Catalog;

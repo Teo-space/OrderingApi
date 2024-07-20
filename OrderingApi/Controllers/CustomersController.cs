@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.OutputCaching;
+﻿using Interfaces.Services.Customers;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace OrderingApi.Controllers;
 
-
-[Route("api/[controller]")]
-[ApiController]
-public class CustomersController(ICustomersService customersService) : ControllerBase
+public class CustomersController(ICustomersService customersService) : ApiBaseController
 {
 
     /// <summary>

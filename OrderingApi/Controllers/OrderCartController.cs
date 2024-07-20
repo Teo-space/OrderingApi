@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.OutputCaching;
+﻿using Interfaces.Services.OrderCart;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace OrderingApi.Controllers;
 
 /// <summary>
 /// Работа с корзиной покупок
 /// </summary>
-[Route("api/[controller]")]
-[ApiController]
-public class OrderCartController(IOrderCartService orderCartService) : ControllerBase
+public class OrderCartController(IOrderCartService orderCartService) : ApiBaseController
 {
 
     /// <summary>
